@@ -90,6 +90,14 @@ Calculate stock growth with reinvested dividends and periodic contributions.
 - Visualizes investment growth over time.  
 - Detailed breakdowns in Excel.
 
+### 12. **Long Weekend Planner**  
+**File:** `long_weekend.py`  
+Identify U.S. federal holidays and plan extended weekends by taking adjacent days off.  
+**Features:**  
+- Calculates dates for U.S. federal holidays.  
+- Suggests which days to take off to create long weekends.  
+- Accounts for holidays that fall mid-week, on Mondays, or Fridays.
+
 ---
 
 ## Requirements
