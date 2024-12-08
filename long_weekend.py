@@ -84,21 +84,17 @@ def suggest_long_weekends(year):
         holiday_date = calculate_holiday_date(year, rule)
         holiday_weekday = holiday_date.weekday()
 
-        if holiday_weekday in [0, 1, 3, 4]:  # Monday, Tuesday, Thursday, Friday
-            # Add extra days to make it a long weekend
-            if holiday_weekday == 0:  # Monday
-                suggestion = f"{holiday} on {holiday_date} - Take Friday off for a 4-day weekend."
-            elif holiday_weekday == 4:  # Friday
-                suggestion = f"{holiday} on {holiday_date} - Take Monday off for a 4-day weekend."
-            elif holiday_weekday == 1:  # Tuesday
-                suggestion = f"{holiday} on {holiday_date} - Take Monday off for a 4-day weekend."
-            elif holiday_weekday == 3:  # Thursday
-                suggestion = f"{holiday} on {holiday_date} - Take Friday off for a 4-day weekend."
+        if holiday_weekday == 0:  # Monday
+            suggestion = f"{holiday} on {holiday_date} - Take the preceding Friday off for a 4-day weekend."
+        elif holiday_weekday == 4:  # Friday
+            suggestion = f"{holiday} on {holiday_date} - Take the following Monday for a 4-day weekend or the preceding Thursday and the following Monday for a 5-day weekend."
+        elif holiday_weekday == 1:  # Tuesday
+            suggestion = f"{holiday} on {holiday_date} - Take the preceding Monday off for a 4-day weekend."
+        elif holiday_weekday == 3:  # Thursday
+            suggestion = f"{holiday} on {holiday_date} - Take the following Friday off for a 4-day weekend."
         elif holiday_weekday == 2:  # Wednesday
-            # Take adjacent days for an extended break
-            suggestion = f"{holiday} on {holiday_date} - Take Thursday and Friday for a 5-day weekend."
-        else:
-            # Weekend holidays
+            suggestion = f"{holiday} on {holiday_date} - Take the following Thursday and Friday off for a 5-day weekend."
+        else:  # Weekend holidays
             suggestion = f"{holiday} on {holiday_date} falls on a weekend. Consider an alternative holiday."
 
         suggestions.append(suggestion)
