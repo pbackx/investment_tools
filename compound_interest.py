@@ -4,38 +4,38 @@ import matplotlib.pyplot as plt
 from openpyxl import load_workbook
 from openpyxl.drawing.image import Image
 
-def compound_interest(principal, annual_rate, contribution, frequency, total_periods, is_duration_in_years, annual_increase=0, inflation_rate=0, compounding_frequency="monthly"):
+def compound_interest(principal, annual_rate, contribution, frequency, total_duration, is_duration_in_years, annual_increase=0, inflation_rate=0):
     freq_map = {"daily": 365, "weekly": 52, "bi-weekly": 26, "monthly": 12, "yearly": 1}
     periods_per_year = freq_map.get(frequency, 12)
-    total_periods = total_periods * periods_per_year if is_duration_in_years else total_periods
-    compounding_map = {"daily": 365, "monthly": 12, "yearly": 1}
-    compounding_periods_per_year = compounding_map.get(compounding_frequency, 12)
+    total_periods = total_duration * periods_per_year if is_duration_in_years else total_duration * periods_per_year // 12
 
-    periodic_rate = (annual_rate / 100) / compounding_periods_per_year
-    inflation_periodic_rate = (1 + inflation_rate / 100) ** (1 / compounding_periods_per_year) - 1 if inflation_rate > 0 else 0
-
+    periodic_rate = (annual_rate / 100) / periods_per_year
     results = []
     balance = principal
     total_contributions = principal
     total_interest_earned = 0
 
     for period in range(1, total_periods + 1):
-        # Add contributions first
+        # Add contributions at the start of each period
         balance += contribution
         total_contributions += contribution
 
-        # Calculate and add interest
+        # Calculate interest for the period
         interest = balance * periodic_rate
         balance += interest
         total_interest_earned += interest
 
+        # Determine the current month
+        current_month = (period - 1) * 12 // periods_per_year + 1
+
         # Apply inflation adjustment if applicable
-        real_balance = balance / ((1 + inflation_rate / 100) ** (period / periods_per_year)) if inflation_rate > 0 else None
+        real_balance = balance / ((1 + inflation_rate / 100) ** (current_month / 12)) if inflation_rate > 0 else None
 
         # Append results for the period
         result = {
             "Period": period,
-            "Year": math.ceil(period / periods_per_year),
+            "Month": current_month,
+            "Year": (current_month - 1) // 12 + 1,
             "Principal Paid": total_contributions,
             "Interest Paid (This Period)": interest,
             "Total Interest Paid": total_interest_earned,
@@ -46,7 +46,7 @@ def compound_interest(principal, annual_rate, contribution, frequency, total_per
 
         results.append(result)
 
-        # Increase contributions annually
+        # Apply annual contribution increase
         if period % periods_per_year == 0:
             contribution *= (1 + annual_increase / 100)
 
