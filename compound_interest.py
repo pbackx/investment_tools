@@ -20,22 +20,24 @@ def compound_interest(principal, annual_rate, contribution, frequency, total_per
     total_interest_earned = 0
 
     for period in range(1, total_periods + 1):
-        period_interest = 0
-        for _ in range(int(periods_per_year / 12)):
-            interest = balance * periodic_rate
-            balance += interest
-            balance += contribution / (periods_per_year / 12)
-            period_interest += interest
-            total_contributions += contribution / (periods_per_year / 12)
+        # Add contributions first
+        balance += contribution
+        total_contributions += contribution
 
-        total_interest_earned += period_interest
-        real_balance = balance / ((1 + inflation_rate / 100) ** (period / 12)) if inflation_rate > 0 else None
+        # Calculate and add interest
+        interest = balance * periodic_rate
+        balance += interest
+        total_interest_earned += interest
 
+        # Apply inflation adjustment if applicable
+        real_balance = balance / ((1 + inflation_rate / 100) ** (period / periods_per_year)) if inflation_rate > 0 else None
+
+        # Append results for the period
         result = {
             "Period": period,
             "Year": math.ceil(period / periods_per_year),
             "Principal Paid": total_contributions,
-            "Interest Paid (This Period)": period_interest,
+            "Interest Paid (This Period)": interest,
             "Total Interest Paid": total_interest_earned,
             "Balance": balance,
         }
@@ -44,6 +46,7 @@ def compound_interest(principal, annual_rate, contribution, frequency, total_per
 
         results.append(result)
 
+        # Increase contributions annually
         if period % periods_per_year == 0:
             contribution *= (1 + annual_increase / 100)
 
