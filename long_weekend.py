@@ -1,8 +1,14 @@
 import datetime
 import calendar
+from typing import TypeVar
+
+from holidays import country_holidays, list_supported_countries
+
+HolidaySpec = TypeVar("HolidaySpec", tuple[int, int], str)
+HolidayDictSpec = dict[str, HolidaySpec]
 
 # Define U.S. federal holidays with fixed and dynamic dates
-FEDERAL_HOLIDAYS = {
+FEDERAL_HOLIDAYS: HolidayDictSpec = {
     "New Year's Day": (1, 1),
     "Martin Luther King Jr. Day": "third_monday_january",
     "Presidents' Day": "third_monday_february",
@@ -77,10 +83,10 @@ def nth_weekday_in_month(year, month, weekday, n):
             if count == n:
                 return datetime.date(year, month, day)
 
-def suggest_long_weekends(year):
+def suggest_long_weekends(year: int, holidays: HolidayDictSpec):
     """Suggest long weekends for the given year."""
     suggestions = []
-    for holiday, rule in FEDERAL_HOLIDAYS.items():
+    for holiday, rule in holidays.items():
         holiday_date = calculate_holiday_date(year, rule)
         holiday_weekday = holiday_date.weekday()
 
@@ -102,8 +108,23 @@ def suggest_long_weekends(year):
     return suggestions
 
 if __name__ == "__main__":
+    country = ''
+    country_dict = list_supported_countries(include_aliases=False)
+    countries = [country for country in country_dict.keys()]
+    while country.upper() not in countries:
+        country = input(f"Enter they country (l for list): ").upper()
+        if country == 'L':
+            print(countries)
+
+    subdivs = country_dict[country]
+    if len(subdivs) > 0:
+        print(f"Subdivisions for {country} are not supported yet: {subdivs}")
+
     year = int(input("Enter the year to plan long weekends: "))
-    long_weekend_suggestions = suggest_long_weekends(year)
+
+    us_holidays = {name: (date.month, date.day) for date, name in sorted(country_holidays(country, years=year).items()) }
+    s2 = suggest_long_weekends(year, us_holidays)
     print("\nLong Weekend Suggestions:")
-    for suggestion in long_weekend_suggestions:
+    for suggestion in s2:
         print(f"- {suggestion}")
+
